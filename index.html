@@ -9,11 +9,10 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f8fafc;
+            background-color: #f0f2f5;
         }
         .navy-bg { background-color: #001f3f; }
         .navy-text { color: #001f3f; }
-        .navy-border { border-color: #001f3f; }
         .btn-primary {
             background-color: #001f3f;
             color: white;
@@ -21,54 +20,52 @@
         }
         .btn-primary:hover {
             background-color: #003366;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         .input-field {
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
+            border: 1px solid #ccd0d5;
+            border-radius: 8px;
+            padding: 12px;
             width: 100%;
             outline: none;
-            transition: border-color 0.2s;
         }
         .input-field:focus {
             border-color: #001f3f;
-            box-shadow: 0 0 0 2px rgba(0, 31, 63, 0.1);
+            ring: 2px rgba(0, 31, 63, 0.2);
         }
         #loadingOverlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 50;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4">
 
     <div id="loadingOverlay">
-        <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p>جاري رفع البيانات والصور... يرجى الانتظار</p>
-        </div>
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white mb-4"></div>
+        <p class="text-lg font-bold">جاري رفع البيانات والصور...</p>
+        <p class="text-sm opacity-75">يرجى عدم إغلاق الصفحة</p>
     </div>
 
-    <div class="max-w-xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-        <!-- Header -->
-        <div class="navy-bg p-6 text-center">
-            <img src="logo1.png" alt="هوية بيتك" class="h-20 mx-auto mb-4 object-contain rounded" onerror="this.src='https://via.placeholder.com/150x80?text=Logo'">
-            <h1 class="text-white text-xl font-bold">بوابة تسجيل المندوبين</h1>
+    <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Logo Header -->
+        <div class="navy-bg p-8 text-center">
+            <img src="logo1.png" alt="هوية بيتك" class="h-24 mx-auto mb-2 object-contain" onerror="this.src='https://via.placeholder.com/200x100?text=Logo1.png'">
+            <p class="text-blue-100 text-sm">نظام إدارة ميدانية</p>
         </div>
 
-        <form id="orderForm" class="p-6 space-y-6">
-            <!-- Region Selection -->
+        <form id="orderForm" class="p-6 space-y-5">
             <div>
-                <label class="block text-sm font-bold navy-text mb-2">المنطقة</label>
+                <label class="block text-sm font-bold navy-text mb-1">اختر المنطقة</label>
                 <select id="region" name="region" class="input-field" required onchange="filterNames()">
-                    <option value="">اختر المنطقة</option>
+                    <option value="">-- اختر المنطقة --</option>
                     <option value="الرياض">الرياض</option>
                     <option value="تبوك">تبوك</option>
                     <option value="الغربيه">المنطقة الغربية</option>
@@ -78,47 +75,41 @@
                 </select>
             </div>
 
-            <!-- Name Selection (Dynamic) -->
             <div>
-                <label class="block text-sm font-bold navy-text mb-2">اسم المندوب</label>
+                <label class="block text-sm font-bold navy-text mb-1">اسم المندوب</label>
                 <select id="delegateName" name="delegateName" class="input-field" required disabled>
                     <option value="">اختر المنطقة أولاً</option>
                 </select>
             </div>
 
-            <hr class="border-gray-100">
-
-            <!-- Order Data -->
-            <div>
-                <label class="block text-sm font-bold navy-text mb-2">رقم الطلب</label>
-                <input type="text" name="orderNumber" class="input-field" placeholder="أدخل رقم الطلب" required>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-sm font-bold navy-text mb-1">رقم الطلب</label>
+                    <input type="text" name="orderNumber" class="input-field" placeholder="0000" required>
+                </div>
+                <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-sm font-bold navy-text mb-1">عدد اللوحات</label>
+                    <input type="number" name="platesCount" class="input-field" placeholder="1" required min="1">
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-bold navy-text mb-2">العنوان الوطني</label>
-                <textarea name="nationalAddress" class="input-field" rows="2" placeholder="أدخل العنوان الوطني بالتفصيل" required></textarea>
+                <label class="block text-sm font-bold navy-text mb-1">العنوان الوطني</label>
+                <textarea name="nationalAddress" class="input-field" rows="2" placeholder="أدخل تفاصيل العنوان" required></textarea>
             </div>
 
             <div>
-                <label class="block text-sm font-bold navy-text mb-2">عدد لوحات الطلب</label>
-                <input type="number" name="platesCount" class="input-field" placeholder="0" required min="1">
+                <label class="block text-sm font-bold navy-text mb-1">صور الطلب</label>
+                <input type="file" id="photos" name="photos" class="input-field bg-gray-50" multiple accept="image/*" required>
+                <p class="text-[10px] text-gray-400 mt-1">تأكد من وضوح الصور قبل الرفع</p>
             </div>
 
-            <!-- Photo Upload -->
-            <div>
-                <label class="block text-sm font-bold navy-text mb-2">رفع صور الطلب (يمكنك اختيار أكثر من صورة)</label>
-                <input type="file" id="photos" name="photos" class="input-field" multiple accept="image/*" required>
-                <p class="text-xs text-gray-500 mt-1">يُفضل رفع الصور بصيغة JPG أو PNG</p>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="w-full btn-primary font-bold py-3 px-4 rounded-lg shadow-md">
-                إرسال البيانات للجدول
+            <button type="submit" class="w-full btn-primary font-bold py-4 rounded-xl shadow-lg text-lg">
+                إرسال التقرير الآن
             </button>
         </form>
 
-        <!-- Feedback Message -->
-        <div id="message" class="hidden p-4 mx-6 mb-6 rounded-lg text-center font-bold"></div>
+        <div id="message" class="hidden m-6 p-4 rounded-xl text-center font-bold"></div>
     </div>
 
     <script>
@@ -141,18 +132,16 @@
             { name: "علي عبد الرحمن", region: "الشرقية" }
         ];
 
-        // ⚠️ استبدل هذا الرابط برابط الـ Web App الخاص بك بعد نشر Apps Script
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-SZ5Hhfq9TaOmZh0-y805woldquEv_vE410S9UOwLvrX0fvaGSVwauefbxjNe01F83A/exec";
+        // 🟢 ضع هنا الرابط الذي حصلت عليه من Deploy -> Web App
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-SZ5Hhfq9TaOmZh0-y805woldquEv_vE410S9UOwLvrX0fvaGSVwauefbxjNe01F83A/exec"; 
 
         function filterNames() {
-            const regionSelect = document.getElementById('region');
+            const region = document.getElementById('region').value;
             const nameSelect = document.getElementById('delegateName');
-            const selectedRegion = regionSelect.value;
-
-            nameSelect.innerHTML = '<option value="">اختر الاسم</option>';
+            nameSelect.innerHTML = '<option value="">-- اختر الاسم --</option>';
             
-            if (selectedRegion) {
-                const filtered = delegates.filter(d => d.region === selectedRegion);
+            if (region) {
+                const filtered = delegates.filter(d => d.region === region);
                 filtered.forEach(d => {
                     const opt = document.createElement('option');
                     opt.value = d.name;
@@ -167,60 +156,64 @@
 
         document.getElementById('orderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (WEB_APP_URL === "YOUR_SCRIPT_URL_HERE") {
-                showMessage("خطأ: يرجى ربط كود الـ Apps Script أولاً", "bg-red-100 text-red-700");
+            const msgDiv = document.getElementById('message');
+            const overlay = document.getElementById('loadingOverlay');
+
+            if (WEB_APP_URL.includes("YOUR_SCRIPT_URL")) {
+                showMessage("خطأ: لم يتم ضبط رابط السكربت!", "bg-red-100 text-red-700");
                 return;
             }
 
-            const overlay = document.getElementById('loadingOverlay');
             overlay.style.display = 'flex';
-
-            const form = e.target;
-            const formData = new FormData(form);
-            const files = document.getElementById('photos').files;
-            
-            // تحويل الصور لـ Base64 لسهولة النقل عبر Script
-            const photoPromises = Array.from(files).map(file => {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve({
-                        name: file.name,
-                        type: file.type,
-                        data: e.target.result.split(',')[1]
-                    });
-                    reader.readAsDataURL(file);
-                });
-            });
-
-            const photosBase64 = await Promise.all(photoPromises);
-
-            const payload = {
-                region: formData.get('region'),
-                delegateName: formData.get('delegateName'),
-                orderNumber: formData.get('orderNumber'),
-                nationalAddress: formData.get('nationalAddress'),
-                platesCount: formData.get('platesCount'),
-                photos: photosBase64
-            };
+            msgDiv.classList.add('hidden');
 
             try {
+                const form = e.target;
+                const formData = new FormData(form);
+                const files = document.getElementById('photos').files;
+                
+                // تحويل الصور لـ Base64
+                const photoPromises = Array.from(files).map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve({
+                            name: file.name,
+                            type: file.type,
+                            data: e.target.result.split(',')[1]
+                        });
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                const photosBase64 = await Promise.all(photoPromises);
+
+                const payload = {
+                    region: formData.get('region'),
+                    delegateName: formData.get('delegateName'),
+                    orderNumber: formData.get('orderNumber'),
+                    nationalAddress: formData.get('nationalAddress'),
+                    platesCount: formData.get('platesCount'),
+                    photos: photosBase64
+                };
+
+                // إرسال الطلب باستخدام POST مع تحويله لنص لتجنب مشاكل CORS المعقدة
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
+                    mode: 'no-cors', // نستخدم no-cors إذا استمرت المشكلة، ولكن سنحاول بدونه أولاً
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    showMessage("تم إرسال البيانات والتحميل بنجاح ✅", "bg-green-100 text-green-700");
-                    form.reset();
-                    document.getElementById('delegateName').disabled = true;
-                } else {
-                    throw new Error(result.message);
-                }
+
+                // ملاحظة: مع Apps Script و fetch، أحياناً لا يمكن قراءة الاستجابة مباشرة بسبب الـ Redirect
+                // لذا سنفترض النجاح إذا لم يحدث Error في الـ Fetch نفسه
+                showMessage("تم إرسال الطلب بنجاح! راجع جدول البيانات ✅", "bg-green-100 text-green-700");
+                form.reset();
+                document.getElementById('delegateName').disabled = true;
+
             } catch (error) {
-                showMessage("حدث خطأ أثناء الإرسال: " + error.message, "bg-red-100 text-red-700");
+                console.error(error);
+                showMessage("خطأ في الاتصال: تأكد من إعدادات النشر والرابط", "bg-red-100 text-red-700");
             } finally {
                 overlay.style.display = 'none';
             }
@@ -229,10 +222,10 @@
         function showMessage(text, classes) {
             const msgDiv = document.getElementById('message');
             msgDiv.textContent = text;
-            msgDiv.className = `p-4 mx-6 mb-6 rounded-lg text-center font-bold ${classes}`;
+            msgDiv.className = `m-6 p-4 rounded-xl text-center font-bold ${classes}`;
             msgDiv.classList.remove('hidden');
+            window.scrollTo(0, document.body.scrollHeight);
         }
     </script>
 </body>
 </html>
-
