@@ -50,7 +50,7 @@
 
     <div id="loadingOverlay">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white mb-4"></div>
-        <p class="text-lg font-bold">جاري رفع البيانات والصور...</p>
+        <p class="text-lg font-bold">جاري رفع البيانات...</p>
         <p class="text-sm opacity-75">يرجى عدم إغلاق الصفحة</p>
     </div>
 
@@ -62,8 +62,9 @@
         </div>
 
         <form id="orderForm" class="p-6 space-y-5">
+            <!-- Region: Mandatory -->
             <div>
-                <label class="block text-sm font-bold navy-text mb-1">اختر المنطقة</label>
+                <label class="block text-sm font-bold navy-text mb-1">اختر المنطقة <span class="text-red-500">*</span></label>
                 <select id="region" name="region" class="input-field" required onchange="filterNames()">
                     <option value="">-- اختر المنطقة --</option>
                     <option value="الرياض">الرياض</option>
@@ -75,37 +76,39 @@
                 </select>
             </div>
 
+            <!-- Delegate: Mandatory -->
             <div>
-                <label class="block text-sm font-bold navy-text mb-1">اسم المندوب</label>
+                <label class="block text-sm font-bold navy-text mb-1">اسم المندوب <span class="text-red-500">*</span></label>
                 <select id="delegateName" name="delegateName" class="input-field" required disabled>
                     <option value="">اختر المنطقة أولاً</option>
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
+                <!-- Optional Fields -->
                 <div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-bold navy-text mb-1">رقم الطلب</label>
-                    <input type="text" id="orderNumber" name="orderNumber" class="input-field" placeholder="0000" required>
+                    <label class="block text-sm font-bold navy-text mb-1">رقم الطلب (اختياري)</label>
+                    <input type="text" id="orderNumber" name="orderNumber" class="input-field" placeholder="0000">
                 </div>
                 <div class="col-span-2 sm:col-span-1">
-                    <label class="block text-sm font-bold navy-text mb-1">عدد اللوحات</label>
-                    <input type="number" name="platesCount" class="input-field" placeholder="1" required min="1">
+                    <label class="block text-sm font-bold navy-text mb-1">عدد اللوحات (اختياري)</label>
+                    <input type="number" name="platesCount" class="input-field" placeholder="1" min="1">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-bold navy-text mb-1">العنوان الوطني</label>
-                <textarea name="nationalAddress" class="input-field" rows="2" placeholder="أدخل تفاصيل العنوان" required></textarea>
+                <label class="block text-sm font-bold navy-text mb-1">العنوان الوطني (اختياري)</label>
+                <textarea name="nationalAddress" class="input-field" rows="2" placeholder="أدخل تفاصيل العنوان"></textarea>
             </div>
 
             <div>
-                <label class="block text-sm font-bold navy-text mb-1">صور الطلب</label>
-                <input type="file" id="photos" name="photos" class="input-field bg-gray-50" multiple accept="image/*" required>
-                <p class="text-[10px] text-gray-400 mt-1">تأكد من وضوح الصور قبل الرفع</p>
+                <label class="block text-sm font-bold navy-text mb-1">صور الطلب (اختياري)</label>
+                <input type="file" id="photos" name="photos" class="input-field bg-gray-50" multiple accept="image/*">
+                <p class="text-[10px] text-gray-400 mt-1">يمكنك ترك الصور فارغة أو رفع أكثر من صورة</p>
             </div>
 
             <button type="submit" class="w-full btn-primary font-bold py-4 rounded-xl shadow-lg text-lg">
-                إرسال التقرير الآن
+                إرسال البيانات
             </button>
         </form>
 
@@ -133,7 +136,7 @@
         ];
 
         // 🟢 ضع هنا الرابط الذي حصلت عليه من Deploy -> Web App
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-SZ5Hhfq9TaOmZh0-y805woldquEv_vE410S9UOwLvrX0fvaGSVwauefbxjNe01F83A/exec"; 
+        const WEB_APP_URL = "YOUR_SCRIPT_URL_HERE"; 
 
         function filterNames() {
             const region = document.getElementById('region').value;
@@ -174,16 +177,16 @@
                 
                 const regionVal = formData.get('region');
                 const delegateNameVal = formData.get('delegateName');
-                const orderNumberVal = formData.get('orderNumber');
+                const orderNumberVal = formData.get('orderNumber') || "بدون رقم";
+                const nationalAddressVal = formData.get('nationalAddress') || "غير متوفر";
+                const platesCountVal = formData.get('platesCount') || "0";
 
-                // تحويل الصور لـ Base64 مع إعادة تسمية الملف حسب الطلب
+                // تحويل الصور لـ Base64 فقط إذا وجدت
                 const photoPromises = Array.from(files).map((file, index) => {
                     return new Promise((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            // استخراج امتداد الملف الأصلي (مثل .jpg أو .png)
                             const extension = file.name.split('.').pop();
-                            // إنشاء الاسم الجديد المطلوب: رقم الطلب - اسم المندوب - المنطقة - رقم اللوحة
                             const newFileName = `${orderNumberVal} - ${delegateNameVal} - ${regionVal} - لوحة ${index + 1}.${extension}`;
                             
                             resolve({
@@ -203,20 +206,19 @@
                     region: regionVal,
                     delegateName: delegateNameVal,
                     orderNumber: orderNumberVal,
-                    nationalAddress: formData.get('nationalAddress'),
-                    platesCount: formData.get('platesCount'),
+                    nationalAddress: nationalAddressVal,
+                    platesCount: platesCountVal,
                     photos: photosBase64
                 };
 
-                // إرسال الطلب باستخدام POST مع تحويله لنص لتجنب مشاكل CORS
-                const response = await fetch(WEB_APP_URL, {
+                await fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
 
-                showMessage("تم إرسال الطلب بنجاح! تم تسمية الصور وحفظها في الجدول ✅", "bg-green-100 text-green-700");
+                showMessage("تم إرسال البيانات بنجاح ✅", "bg-green-100 text-green-700");
                 form.reset();
                 document.getElementById('delegateName').disabled = true;
 
